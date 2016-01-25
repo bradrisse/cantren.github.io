@@ -112,9 +112,7 @@ at the following url:
 
 1. npm install
 2. bower install
-3. gulp bower
-4. python -m SimpleHTTPServer
-5. visit http://localhost:8000/
+3. gulp
 
 https://github.com/cantren/Vunit[Linux Version]
 
