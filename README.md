@@ -108,6 +108,14 @@ the post-filtering feed to the ffserver “feed #2”(IE. http://127.0.0.1:8090/
 When in “autopilot mode”, the OpenCV server will take control of the mouse and keyboard. A demonstration of this can be found 
 at the following url:
 
+# Install Instructions
+
+1. npm install
+2. bower install
+3. gulp bower
+4. python -m SimpleHTTPServer
+5. visit http://localhost:8000/
+
 https://github.com/cantren/Vunit[Linux Version]
 
 [TODO: make Windows version][Windows Version]
