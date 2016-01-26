@@ -1,59 +1,84 @@
 {
-  "name": "cantren.github.io-master",
-  "authors": [
-    "Cantren"
-  ],
-  "description": "",
-  "main": "",
-  "moduleType": [
-    "globals"
-  ],
-  "license": "MIT",
-  "homepage": "",
-  "private": true,
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
-  "dependencies": {
-    "ocean": "https://github.com/jbouny/ocean.git",
-    "three.js": "https://github.com/mrdoob/three.js.git",
-    "stemkoski": "https://github.com/stemkoski/stemkoski.github.com.git",
-    "dat-gui": "~0.5.1"
-  },
-  "overrides": {
-    "three.js": {
-      "main": [
-        "./build/three.min.js",
-        "./examples/js/controls/FirstPersonControls.js",
-        "./examples/js/controls/FlyControls.js",
-        "./examples/js/shaders/BrightnessContrastShader.js",
-        "./examples/js/shaders/CopyShader.js",
-        "./examples/js/renderers/CSS3DStereoRenderer.js",
-        "./examples/js/Mirror.js",
-        "./examples/js/WaterShader.js",
-        "./examples/js/Detector.js",
-        "./examples/js/libs/stats.min.js",
-        "./examples/js/loaders/MTLLoader.js",
-        "./examples/js/loaders/OBJLoader.js",
-        "./examples/js/postprocessing/ShaderPass.js",
-        "./examples/js/postprocessing/EffectComposer.js",
-        "./examples/js/postprocessing/RenderPass.js",
-        "./examples/js/effects/StereoEffect.js"
-      ]
+    "name": "cantren.github.io-master",
+    "authors": [
+        "Cantren"
+    ],
+    "description": "",
+    "main": "",
+    "moduleType": [
+        "globals"
+    ],
+    "license": "MIT",
+    "homepage": "",
+    "private": true,
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ],
+    "dependencies": {
+        "ocean": "https://github.com/jbouny/ocean.git",
+        "three.js": "https://github.com/mrdoob/three.js.git",
+        "stemkoski": "https://github.com/stemkoski/stemkoski.github.com.git",
+        "dat-gui": "~0.5.1",
+        "jquery": "~2.1.4",
+        "bootstrap": "~3.3.4",
+        "gamepad": "gamepad.js#*",
+        "angular-bootstrap": "~1.1.0",
+        "angular": "angularjs#~1.4.9",
+        "socket.io-client": "~1.4.4",
+        "angular-socket-io": "~0.7.0"
     },
-    "stemkoski": {
-      "main": [
-        "./Three.js/js/KeyboardState.js"
-      ]
-    },
-    "dat-gui": {
-      "main": [
-        "./build/dat.gui.min.js"
-      ]
+    "overrides": {
+        "three.js": {
+            "main": [
+                "./build/three.min.js",
+                "./examples/js/controls/FirstPersonControls.js",
+                "./examples/js/controls/FlyControls.js",
+                "./examples/js/shaders/BrightnessContrastShader.js",
+                "./examples/js/shaders/CopyShader.js",
+                "./examples/js/renderers/CSS3DStereoRenderer.js",
+                "./examples/js/Mirror.js",
+                "./examples/js/WaterShader.js",
+                "./examples/js/Detector.js",
+                "./examples/js/libs/stats.min.js",
+                "./examples/js/loaders/MTLLoader.js",
+                "./examples/js/loaders/OBJLoader.js",
+                "./examples/js/postprocessing/ShaderPass.js",
+                "./examples/js/postprocessing/EffectComposer.js",
+                "./examples/js/postprocessing/RenderPass.js",
+                "./examples/js/effects/StereoEffect.js"
+            ]
+        },
+        "stemkoski": {
+            "main": [
+                "./Three.js/js/KeyboardState.js"
+            ]
+        },
+        "dat-gui": {
+            "main": [
+                "./build/dat.gui.min.js"
+            ]
+        },
+        "socket.io-client": {
+            "main": ["./socket.io.js"]
+        },
+        "angular-socket-io": {
+            "main": ["./socket.min.js"]
+        },
+        "angular": {
+            "main": ["./angular.min.js"]
+        },
+        "angular-bootstrap": {
+            "main": ["./ui-bootstrap.min.js"]
+        },
+        "gamepad": {
+            "main": ["./gamepad.js"]
+        },
+        "bootstrap": {
+            "main": ["./dist/js/bootstrap.min.js", "./dist/css/bootstrap.min.css"]
+        }
     }
-  }
 }

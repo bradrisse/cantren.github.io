@@ -262,7 +262,13 @@ THREE.Mirror.prototype.render = function () {
 
 	if ( scene !== undefined && scene instanceof THREE.Scene) {
 
+		// We can't render ourself to ourself
+		var visible = this.material.visible;
+		this.material.visible = false;
+
 		this.renderer.render( scene, this.mirrorCamera, this.texture, true );
+
+		this.material.visible = visible;
 
 	}
 

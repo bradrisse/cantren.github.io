@@ -1,37 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
 
 <head>
-    <title>SimBox - Robosub Simulator</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="styles/main.css">
 </head>
 
-<body>
-    <div id="container">
-        <div id="inset">
-            <script src="js/three.min.js"></script>
-            <!-- <script type="text/javascript" src="js/vendor/three.min.js"></script> -->
-            <script src="js/vendor/FirstPersonControls.js"></script>
-            <script src="js/vendor/KeyboardState.js"></script>
-            <script src="js/vendor/CSS3DStereoRenderer.js"></script>
-            <script src="js/vendor-mods/Mirror.js"></script>  <!-- MODIFIED-->
-            <script src="js/vendor/WaterShader.js"></script>
-            <script src="js/vendor/Detector.js"></script>
-			<script src="js/vendor/stats.min.js"></script>
-			<script src="js/vendor/dat.gui.min.js"></script>
-			<script src="js/vendor/BrightnessContrastShader.js"></script>
-			<script src="js/vendor/CopyShader.js"></script>
-            <!-- <script src="js/material.js"></script> IS THIS NEEDED?-->
-            <script src="js/vendor-mods/MTLLoader.js"></script> <!-- MODIFIED-->
-            <script src="js/vendor-mods/OBJMTLLoader.js"></script> <!-- MODIFIED-->
-            <script src="js/vendor/OBJLoader.js"></script>
-            <script src="js/vendor/ShaderPass.js"></script>
-            <script src="js/vendor/EffectComposer.js"></script>
-            <script src="js/vendor/RenderPass.js"></script>
-            <script src="js/vendor/StereoEffect.js"></script>
-            <script src="js/app.js"></script>
+<body ng-app="simbox">
+    <!-- application content -->
+    <div class="container" ng-controller="AppCtrl">
+        <div robosub width="canvasWidth" trim="trim" speed="speed" depth="depth" height="canvasHeight" fillcontainer="dofillcontainer" scale="scale" material-type="materialType"></div>
+        <div id="inset"></div>
+    </div>
+    <!-- END CONTAINER -->
+    <script src="js/three.min.js"></script>
+    <script src="js/vendor/angular.min.js"></script>
+    <script src="js/vendor/jquery.js"></script>
+    <script src="js/vendor/water-material.js"></script>
+
+    <script src="js/vendor/socket.io.js"></script>
+
+    <script src="js/vendor/socket.min.js"></script>
+    <script src="js/vendor/bootstrap.min.js"></script>
+    <script src="js/vendor/ui-bootstrap.min.js"></script>
+    <script src="js/vendor/gamepad.js"></script>
+
+    <script src="js/app.js"></script>
+    <script src="js/directives/robosub.js"></script>
+    <script src="js/vendor/FirstPersonControls.js"></script>
+    <script src="js/vendor/KeyboardState.js"></script>
+    <script src="js/vendor/CSS3DStereoRenderer.js"></script>
+    <script src="js/vendor/Mirror.js"></script>
+    <script src="js/vendor/Detector.js"></script>
+    <script src="js/vendor/stats.min.js"></script>
+    <script src="js/vendor/dat.gui.min.js"></script>
+    <script src="js/vendor/BrightnessContrastShader.js"></script>
+    <script src="js/vendor/CopyShader.js"></script>
+    <script src="js/vendor-mods/MTLLoader.js"></script>
+    <script src="js/vendor-mods/OBJMTLLoader.js"></script>
+    <script src="js/vendor/OBJLoader.js"></script>
+    <script src="js/vendor/ShaderPass.js"></script>
+    <script src="js/vendor/EffectComposer.js"></script>
+    <script src="js/vendor/RenderPass.js"></script>
+    <script src="js/vendor/StereoEffect.js"></script>
 </body>
 
 </html>

@@ -110,6 +110,8 @@ at the following url:
 
 # Install Instructions
 
+Pre-Requisites: NodeJS (https://nodejs.org/en/), Bower (http://bower.io/#install-bower), Gulp (https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md)
+
 1. npm install
 2. bower install
 3. gulp
