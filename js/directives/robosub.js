@@ -12,7 +12,9 @@ angular.module('simbox')
                 'materialType': '=',
                 'speed': '=',
                 'depth': '=',
-                'trim': '='
+                'pitch': '=',
+                'trim': '=',
+                'roll': '='
             },
             link: function postLink(scope, element, attrs) {
 
@@ -24,7 +26,7 @@ angular.module('simbox')
                     intensity, intensity1, intensity2, intensity3, depthcm,
                     adjIntensityRED, adjIntensityGREEN, adjIntensityBLUE, adjIntensity1RED, adjIntensity1GREEN, adjIntensity1BLUE, adjIntensity2RED, adjIntensity2GREEN, adjIntensity2BLUE, adjIntensity3RED, adjIntensity3GREEN, adjIntensity3BLUE,
                     posX, timeSolar,
-                    fogDensity,
+                    fogDensity, guivalues,
                     contW = (scope.fillcontainer) ?
                     element[0].clientWidth : scope.width,
                     contH = scope.height,
@@ -115,12 +117,21 @@ angular.module('simbox')
                     brightnessContrastPass = new THREE.ShaderPass(THREE.BrightnessContrastShader);
                     brightnessContrastPass.uniforms["contrast"].value = 0.8;
 
-                    camControls = new THREE.FirstPersonControls(camera, renderer.domElement);
-                    camControls.activeLook = false;
-                    camControls.lookSpeed = 0.05; //Pitch Thrust to drag ratio
-                    camControls.movementSpeed = 0.25; // FWD BKWD Thrust to drag ratio 
-                    camControls.verticalMin = -50.0; //basement floor level
-                    camControls.verticalMax = 10.0; //sky ceiling level
+                    // camControls = new THREE.FirstPersonControls(camera, renderer.domElement);
+                    // camControls.activeLook = false;
+                    // camControls.lookSpeed = 0.05; //Pitch Thrust to drag ratio
+                    // camControls.movementSpeed = 0.25; // FWD BKWD Thrust to drag ratio 
+                    // camControls.verticalMin = -50.0; //basement floor level
+                    // camControls.verticalMax = 10.0; //sky ceiling level
+
+                    camControls = new THREE.FlyControls( camera );
+
+                    camControls.domElement = renderer.domElement;
+                    camControls.rollSpeed = Math.PI / 24;
+                    camControls.movementSpeed = 0.5;
+                    camControls.autoForward = false;
+                    camControls.dragToLook = true;
+                    camControls.mouseStatus = 0;
 
                     camControls2 = new THREE.FirstPersonControls(camera2, renderer2.domElement);
                     camControls2.lookSpeed = 0.05; //Pitch Thrust to drag ratio
@@ -523,7 +534,7 @@ angular.module('simbox')
                     scene.add(skyBox); //create Point Loma Sky
                     scene2.add(skyBox2); //create Point Loma Sky
 
-                    var guivalues = new function () {
+                    guivalues = new function () {
 
                             this.timeShift = 0;
                             this.cameraNear = camera.near;
@@ -977,59 +988,108 @@ angular.module('simbox')
 
                 };
 
-                scope.$watch('speed', function(newValue, oldValue) {
+                scope.$watch('speed', function (newValue, oldValue) {
                     if (newValue) {
                         console.log('new speed ', newValue);
-                        if (newValue < 0 ) {
-                            camControls.moveForward = true;
+                        if (newValue < 0) {
+                            camControls.moveState.forward = 1;
                         }
 
-                        if (newValue > 0 ) {
-                            camControls.moveBackward = true;
+                        if (newValue > 0) {
+                            camControls.moveState.back = 1;
                         }
 
-                        if (newValue == 0 ) {
-                            camControls.moveBackward = false;
-                            camControls.moveForward = false;
+                        if (newValue == 0) {
+                            camControls.moveState.forward = 0;
+                            camControls.moveState.back = 0;
                         }
+
+                        camControls.updateMovementVector();
                     }
                 });
 
+                scope.$watch('roll', function (newValue, oldValue) {
+                    if (newValue) {
+                        console.log('new roll ', newValue);
+                        if (newValue < 0) {
+                            camControls.moveState.rollLeft = 1;
+                        }
 
-                scope.$watch('depth', function(newValue, oldValue) {
+                        if (newValue > 0) {
+                            camControls.moveState.rollRight = 1;
+                        }
+
+                        if (newValue == 0) {
+                            camControls.moveState.rollRight = 0;
+                            camControls.moveState.rollLeft = 0;
+                        }
+
+                        camControls.updateRotationVector();
+
+                    }
+                });
+
+                scope.$watch('depth', function (newValue, oldValue) {
                     if (newValue) {
                         console.log('new depth ', newValue);
-                        if (newValue < 0 ) {
-                            camControls.moveDown = true;
+                        if (newValue < 0) {
+                            camControls.moveState.down = 1;
                         }
 
-                        if (newValue > 0 ) {
-                            camControls.moveUp = true;
+                        if (newValue > 0) {
+                            camControls.moveState.up = 1;
                         }
 
-                        if (newValue == 0 ) {
-                            camControls.moveUp = false;
-                            camControls.moveDown = false;
+                        if (newValue == 0) {
+                            camControls.moveState.up = 0;
+                            camControls.moveState.down = 0;
                         }
+
+                        camControls.updateMovementVector();
+                        camControls.updateRotationVector();
                     }
                 });
 
-                scope.$watch('trim', function(newValue, oldValue) {
+                scope.$watch('pitch', function (newValue, oldValue) {
                     if (newValue) {
-                        console.log('new trim ', newValue);
-                        if (newValue < 0 ) {
-                            camControls.moveLeft = true;
+                        console.log('new pitch ', newValue);
+                        if (newValue < 0) {
+                            camControls.moveState.pitchDown = 1;
                         }
 
-                        if (newValue > 0 ) {
-                            camControls.moveRight = true;
+                        if (newValue > 0) {
+                            camControls.moveState.pitchUp = 1;
+                        }
+
+                        if (newValue == 0) {
+                            camControls.moveState.pitchUp = 0;
+                            camControls.moveState.pitchDown = 0;
+                        }
+
+                        camControls.updateMovementVector();
+                        camControls.updateRotationVector();
+                    }
+                });
+
+                scope.$watch('trim', function (newValue, oldValue) {
+                    if (newValue) {
+                        console.log('new trim ', newValue);
+                        if (newValue < 0) {
+                            camControls.moveState.yawLeft = 1;
+                        }
+
+                        if (newValue > 0) {
+                            camControls.moveState.yawRight = 1;
                             //camera.translateZ(-40);
                         }
 
-                        if (newValue == 0 ) {
-                            camControls.moveLeft = false;
-                            camControls.moveRight = false;
+                        if (newValue == 0) {
+                            camControls.moveState.yawLeft = 0;
+                            camControls.moveState.yawRight = 0;
                         }
+
+                        camControls.updateMovementVector();
+                        camControls.updateRotationVector();
                     }
                 });
 

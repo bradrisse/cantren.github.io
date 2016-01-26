@@ -1,17 +1,11 @@
-'use strict';
+// var socket = io.connect('http://localhost');
 
-var app = angular.module('simbox', ['btford.socket-io']);
+var app = angular.module("simbox", ['ui.bootstrap', 'btford.socket-io']);
 app.factory('mySocket', function (socketFactory) {
     return socketFactory();
 });
-app.controller('AppCtrl', ['$scope', function ($scope, mySocket) {
-
-    $scope.canvasWidth = 400;
-    $scope.canvasHeight = 600;
-    $scope.dofillcontainer = true;
-    $scope.scale = 1;
-    $scope.materialType = 'lambert';
-
+app.controller("AppCtrl", function ($scope, mySocket) {
+    console.log('mySocket ', mySocket);
     var hasGP = false;
     var repGP;
     var allStop = true;
@@ -29,72 +23,72 @@ app.controller('AppCtrl', ['$scope', function ($scope, mySocket) {
         $scope.trim = gp.axes[5].toFixed(2);
         $scope.$apply();
 
-        // if ($scope.speed != 0) {
-        //     allStop = false;
-        //     if ($scope.speed > 0) {
-        //         mySocket.emit('speed:reverse', {
-        //             speed: {
-        //                 left: convertSpeed($scope.speed, 'left'),
-        //                 right: convertSpeed($scope.speed, 'right')
-        //             }
-        //         });
-        //     }
+        if ($scope.speed != 0) {
+            allStop = false;
+            if ($scope.speed > 0) {
+                mySocket.emit('speed:reverse', {
+                    speed: {
+                        left: convertSpeed($scope.speed, 'left'),
+                        right: convertSpeed($scope.speed, 'right')
+                    }
+                });
+            }
 
-        //     if ($scope.speed < 0) {
-        //         mySocket.emit('speed:forward', {
-        //             speed: {
-        //                 left: convertSpeed($scope.speed, 'left'),
-        //                 right: convertSpeed($scope.speed, 'right')
-        //             }
-        //         });
-        //     }
-        // } else {
-        //     if (!allStop) {
-        //         allStop = true;
-        //         mySocket.emit('speed:allStop', {
-        //             speed: {
-        //                 left: 0,
-        //                 right: 0
-        //             }
-        //         });
-        //     }
-        // }
+            if ($scope.speed < 0) {
+                mySocket.emit('speed:forward', {
+                    speed: {
+                        left: convertSpeed($scope.speed, 'left'),
+                        right: convertSpeed($scope.speed, 'right')
+                    }
+                });
+            }
+        } else {
+            if (!allStop) {
+                allStop = true;
+                mySocket.emit('speed:allStop', {
+                    speed: {
+                        left: 0,
+                        right: 0
+                    }
+                });
+            }
+        }
 
-        // if ($scope.roll > 0) {
-        //     mySocket.emit('roll:right', {
-        //         tilt: {
-        //             left: 0,
-        //             right: 180
-        //         }
-        //     });
-        // }
+        if ($scope.roll > 0) {
+            mySocket.emit('roll:right', {
+                tilt: {
+                    left: 0,
+                    right: 180
+                }
+            });
+        }
 
-        // if ($scope.roll < 0) {
-        //     mySocket.emit('roll:left', {
-        //         tilt: {
-        //             left: 180,
-        //             right: 0
-        //         }
-        //     });
-        // }
+        if ($scope.roll < 0) {
+            mySocket.emit('roll:left', {
+                tilt: {
+                    left: 180,
+                    right: 0
+                }
+            });
+        }
 
-        // if ($scope.depth > 0) {
-        //     mySocket.emit('depth:assend', {
-        //         tilt: {
-        //             left: 180,
-        //             right: 180
-        //         }
-        //     });
-        // }
+        if ($scope.depth > 0) {
+            mySocket.emit('depth:assend', {
+                tilt: {
+                    left: 180,
+                    right: 180
+                }
+            });
+        }
 
-        // if ($scope.depth < 0) {
-        //     mySocket.emit('depth:descend', {
-        //         tilt: {
-        //             left: 0,
-        //             right: 0
-        //         }
-        //     });
-        // }
+        if ($scope.depth < 0) {
+            mySocket.emit('depth:descend', {
+                tilt: {
+                    left: 0,
+                    right: 0
+                }
+            });
+        }
 
     }
 
@@ -141,5 +135,4 @@ app.controller('AppCtrl', ['$scope', function ($scope, mySocket) {
             }
         }, 500);
     }
-
-}]);
+});
