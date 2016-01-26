@@ -1,11 +1,20 @@
-// var socket = io.connect('http://localhost');
-
 var app = angular.module("simbox", ['ui.bootstrap', 'btford.socket-io']);
 app.factory('mySocket', function (socketFactory) {
     return socketFactory();
 });
-app.controller("AppCtrl", function ($scope, mySocket) {
-    console.log('mySocket ', mySocket);
+app.controller("AppCtrl", function ($scope, $window, mySocket) {
+    console.log('app start');
+    var random_messages = [
+      "Together we can face any challenges as deep as the ocean and as high as the sky.",
+      "In the ocean of baseness, the deeper we get, the easier the sinking.",
+      "Loading the RoboSub Simulation."
+    ];
+
+    $window.loading_screen = $window.pleaseWait({
+      logo: "images/logo.png",
+      backgroundColor: '#50C7E8',
+      loadingHtml: "<p class='loading-message'>"+random_messages[Math.floor(Math.random() * random_messages.length)]+"</p><div class='sk-spinner sk-chasing-dots'><div class='sk-child sk-dot1'></div><div class='sk-child sk-dot2'></div></div>"
+    });
     var hasGP = false;
     var repGP;
     var allStop = true;

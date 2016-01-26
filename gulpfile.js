@@ -2,7 +2,6 @@ var gulp = require('gulp');
 var mainBowerFiles = require('main-bower-files');
 var vendor = require('gulp-concat-vendor');
 var gulpOpen = require('gulp-open'); // open a URL in the browser
-var livereload = require('gulp-livereload');
 var less = require('gulp-less');
 var path = require('path');
 var nodemon = require('gulp-nodemon');
@@ -21,20 +20,21 @@ gulp.task('less', function () {
 });
 
 gulp.task('start', function () {
-  nodemon({
-    script: 'server.js',
-    ext: 'js html',
-    env: { 'NODE_ENV': 'development' }
-  })
+    nodemon({
+        script: 'server.js',
+        ext: 'js html',
+        env: {
+            'NODE_ENV': 'development'
+        }
+    })
 });
 
-gulp.task('open', function(){
-  gulp.src('index.html')
-        .pipe(gulpOpen({uri: 'http://localhost:8080', app: 'Google Chrome'}));
+gulp.task('open', function () {
+    gulp.src('index.html')
+        .pipe(gulpOpen({
+            uri: 'http://localhost:8080',
+            app: 'Google Chrome'
+        }));
 });
 
-gulp.task('watch', function () {
-    gulp.watch(['index.html', 'styles/less/*.less', 'js/app.js'], ['less', 'start', 'open']);
-});
-
-gulp.task('default', ['bower', 'less', 'start', 'open', 'watch']);
+gulp.task('default', ['bower', 'less', 'start', 'open']);

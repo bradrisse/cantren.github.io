@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('simbox')
-    .directive('robosub', function () {
+    .directive('robosub', function ($window, $timeout) {
         return {
             restrict: 'A',
             scope: {
@@ -43,33 +43,24 @@ angular.module('simbox')
                     depth: 1500,
                     param: 4,
                     filterparam: 1
-                }
+                };
 
 
                 scope.init = function () {
-                    renderer = new THREE.WebGLRenderer({
-                        antialias: true
-                    });
-                    renderer.setClearColor(0xffffff);
-                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    scope.initRendererAndScene();
+                    scope.initCameras();
+                    scope.initSceneLighting();
+                    scope.initWater();
+                    scope.initLoadObjects();
+                    scope.initGui();
 
-                    container2 = document.getElementById('inset');
-                    // renderer
-                    renderer2 = new THREE.WebGLRenderer();
-                    renderer2.setClearColor(0xf0f0f0, 1);
-                    renderer2.setSize(300, 300);
-                    container2.appendChild(renderer2.domElement);
+                    // element is provided by the angular directive
+                    element[0].appendChild(renderer.domElement);
 
+                    window.addEventListener('resize', scope.onWindowResize, false);
+                };
 
-                    scene = new THREE.Scene();
-                    //scene.overrideMaterial = new THREE.MeshDepthMaterial();
-                    scene2 = new THREE.Scene();
-                    //scene2.overrideMaterial = new THREE.MeshDepthMaterial();
-
-                    //add water colored fog
-                    scene.fog = new THREE.FogExp2(0x008080, 0.1875);
-                    scene2.fog = new THREE.FogExp2(0x008080, 0.1875);
-
+                scope.initCameras = function () {
                     camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.5, 3000000);
                     //buoy closeup location
                     camera.position.x = -16.73; //pool line of symetry is x axis
@@ -109,14 +100,6 @@ angular.module('simbox')
                     camera3.position.y = -2.0; //water depth
                     camera3.position.z = -28.0; //how close to the wall are you
 
-                    //POST PROCESSING
-                    //Create Shader Passes
-                    renderPass = new THREE.RenderPass(scene, camera);
-                    copyPass = new THREE.ShaderPass(THREE.CopyShader);
-
-                    brightnessContrastPass = new THREE.ShaderPass(THREE.BrightnessContrastShader);
-                    brightnessContrastPass.uniforms["contrast"].value = 0.8;
-
                     // camControls = new THREE.FirstPersonControls(camera, renderer.domElement);
                     // camControls.activeLook = false;
                     // camControls.lookSpeed = 0.05; //Pitch Thrust to drag ratio
@@ -124,7 +107,7 @@ angular.module('simbox')
                     // camControls.verticalMin = -50.0; //basement floor level
                     // camControls.verticalMax = 10.0; //sky ceiling level
 
-                    camControls = new THREE.FlyControls( camera );
+                    camControls = new THREE.FlyControls(camera);
 
                     camControls.domElement = renderer.domElement;
                     camControls.rollSpeed = Math.PI / 24;
@@ -144,173 +127,33 @@ angular.module('simbox')
                     camControls2.movementSpeed = 0.25; // FWD BKWD Thrust to drag ratio 
                     camControls2.verticalMin = -50.0; //basement floor level
                     camControls2.verticalMax = 10.0; //sky ceiling level
+                };
 
-
-
-                    //Add scene lighting
-                    lightRed = new THREE.HemisphereLight(0xff0000, 0x008080, 1); //I tried changing the light color here to see what would happen
-                    lightRed.position.set(-1, 1, -1); //my hemisphere flipped upside down
-                    lightRed.intensity = .25;
-                    scene.add(lightRed); //I changed the name to distinguish a negative y value from "sunlight"
-
-                    light2Red = new THREE.HemisphereLight(0xff0000, 0x008080, 1); //I tried changing the light color here to see what would happen
-                    light2Red.position.set(-1, 1, -1); //my hemisphere flipped upside down
-                    light2Red.intensity = .25;
-                    scene2.add(light2Red); //I changed the name to distinguish a negative y value from "sunlight"
-
-                    lightGreen = new THREE.HemisphereLight(0x5eff00, 0x008080, 1); //I tried changing the light color here to see what would happen
-                    lightGreen.position.set(-1, 1, -1); //my hemisphere flipped upside down
-                    lightGreen.intensity = .25;
-                    scene.add(lightGreen); //I changed the name to distinguish a negative y value from "sunlight"
-
-                    light2Green = new THREE.HemisphereLight(0x5eff00, 0x008080, 1); //I tried changing the light color here to see what would happen
-                    light2Green.position.set(-1, 1, -1); //my hemisphere flipped upside down
-                    light2Green.intensity = .25;
-                    scene2.add(light2Green); //I changed the name to distinguish a negative y value from "sunlight"
-
-                    lightBlue = new THREE.HemisphereLight(0x00a9ff, 0x008080, 1); //I tried changing the light color here to see what would happen
-                    lightBlue.position.set(-1, 1, -1); //my hemisphere flipped upside down
-                    lightBlue.intensity = .25;
-                    scene.add(lightBlue); //I changed the name to distinguish a negative y value from "sunlight"
-
-                    light2Blue = new THREE.HemisphereLight(0x00a9ff, 0x008080, 1); //I tried changing the light color here to see what would happen
-                    light2Blue.position.set(-1, 1, -1); //my hemisphere flipped upside down
-                    light2Blue.intensity = .25;
-                    scene2.add(light2Blue); //I changed the name to distinguish a negative y value from "sunlight"
-
-                    //More scene lighting
-                    //Red
-                    ambientLightRed = new THREE.AmbientLight(0xff0000);
-                    ambientLightRed.intensity = .375;
-                    scene.add(ambientLightRed);
-
-                    ambientLight2Red = new THREE.AmbientLight(0xff0000);
-                    ambientLight2Red.intensity = .375;
-                    scene2.add(ambientLight2Red);
-
-                    //Green
-                    ambientLightGreen = new THREE.AmbientLight(0x5eff00);
-                    ambientLightGreen.intensity = .375;
-                    scene.add(ambientLightGreen);
-
-                    ambientLight2Green = new THREE.AmbientLight(0x5eff00);
-                    ambientLight2Green.intensity = .375;
-                    scene2.add(ambientLight2Green);
-
-                    //Blue
-                    ambientLightBlue = new THREE.AmbientLight(0x00a9ff);
-                    ambientLightBlue.intensity = .375;
-                    scene.add(ambientLightBlue);
-
-                    ambientLight2Blue = new THREE.AmbientLight(0x00a9ff);
-                    ambientLight2Blue.intensity = .375;
-                    scene2.add(ambientLight2Blue);
-
-                    /*
-                    //HemisphereLight details
-                    lightRed lightRed.intensity = .25;
-                    light2Red light2Red.intensity = .25;
-                    lightGreen lightGreen.intensity = .25;
-                    light2Green light2Green.intensity = .25;
-                    lightBlue lightBlue.intensity = .25;
-                    light2Blue light2Blue.intensity = .25;
-                    //HemisphereLight details
-
-                    //ambient light details
-                    ambientLightRed ambientLightRed.intensity = .375;
-                    ambientLight2Red ambientLight2Red.intensity = .375;
-                    ambientLightGreen ambientLightGreen.intensity = .375;
-                    ambientLight2Green ambientLight2Green.intensity = .375;
-                    ambientLightBlue ambientLightBlue.intensity = .375;
-                    ambientLight2Blue ambientLight2Blue.intensity = .375;
-                    //ambient light details
-                    */
-
-
-                    //light up the sun
-                    //spotLightSUN = new THREE.SpotLight(0xFFFFFF);
-                    //spotLightSUN.position.set(100, 140, -130);
-                    //spotLightSUN.intensity = 1000;
-                    //scene.add(spotLightSUN);
-
-                    //Add the three spotlights representing the sun(intensity will be modified as a function of depth)
-                    spotLightRED = new THREE.SpotLight(0xff0000);
-                    spotLightRED.position.set(100, 140, -130);
-                    spotLightRED.intensity = .85;
-                    scene.add(spotLightRED);
-
-                    spotLightRED2 = new THREE.SpotLight(0xff0000);
-                    spotLightRED2.position.set(100, 140, -130);
-                    spotLightRED2.intensity = .85;
-                    scene2.add(spotLightRED2);
-
-                    spotLightBLUE = new THREE.SpotLight(0x00a9ff);
-                    spotLightBLUE.position.set(100, 140, -130);
-                    spotLightBLUE.intensity = .85;
-                    scene.add(spotLightBLUE);
-
-                    spotLightBLUE2 = new THREE.SpotLight(0x00a9ff);
-                    spotLightBLUE2.position.set(100, 140, -130);
-                    spotLightBLUE2.intensity = .85;
-                    scene2.add(spotLightBLUE2);
-
-                    spotLightGREEN = new THREE.SpotLight(0x5eff00);
-                    spotLightGREEN.position.set(100, 140, -130);
-                    spotLightGREEN.intensity = .85;
-                    scene.add(spotLightGREEN);
-
-                    spotLightGREEN2 = new THREE.SpotLight(0x5eff00);
-                    spotLightGREEN2.position.set(100, 140, -130);
-                    spotLightGREEN2.intensity = .85;
-                    scene2.add(spotLightGREEN2);
-                    //Add the three spotlights representing the sun(intensity will be modified as a function of depth)
-
-
-                    // add spotlight for the shadows
-                    /*
-                                var spotLight = new THREE.SpotLight(0xffffff);
-                                spotLight.position.set(100, 140, 130);
-                                spotLight.intensity = 2;
-                                scene.add(spotLight);
-                                
-                                var spotLight2 = new THREE.SpotLight(0xffffff);
-                                spotLight2.position.set(100, 140, 130);
-                                spotLight2.intensity = 2;
-                                scene2.add(spotLight2);
-                                */
-
-
-                    //load and insert the obj meshes and mtl textures
-                    //the "secret sauce" is in these .obj and .mtl files.
-                    //              var loader = new THREE.OBJLoader(); //this object does the work
-                    var loader = new THREE.OBJMTLLoader(); //this object does the work
-                    //
-                    //              loader.load('../obj/transdec OBJ/transdec test.obj', function ( object ) {
-                    loader.load('obj/transdec OBJ/transdec test.obj', 'obj/transdec OBJ/transdec test.mtl', function (object) {
-                        object.position.y = -12.975; //experimentally generated via trial and error
-                        //                  for(var i in object.children) {
-                        //                          object.children[i].material = new THREE.MeshDepthMaterial({color: 0x2194CE});
-                        //                      }
-                        scene.add(object); //to make a Robosub you would likely need to change it's name from "object"
+                scope.initRendererAndScene = function () {
+                    renderer = new THREE.WebGLRenderer({
+                        antialias: true
                     });
-                    //              loader.load('../obj/robosub obstacles/obstacles.obj', function ( object ) {
-                    loader.load('obj/robosub obstacles/obstacles.obj', 'obj/robosub obstacles/obstacles.mtl', function (object) {
-                        object.position.y = -12.975; //experimentally generated via trial and error
-                        //                  for(var i in object.children) {
-                        //                          object.children[i].material = new THREE.MeshDepthMaterial({color: 0x2194CE});
-                        //                      }
-                        scene.add(object); //to make a Robosub you would likely need to change it's name from "object"
-                    });
-                    //              loader.load('../obj/transdec OBJ/transdec test.obj', function ( object ) {
-                    loader.load('obj/transdec OBJ/transdec test.obj', 'obj/transdec OBJ/transdec test.mtl', function (object) {
-                        object.position.y = -12.975; //experimentally generated via trial and error
-                        scene2.add(object); //to make a Robosub you would likely need to change it's name from "object"
-                    });
-                    //              loader.load('../obj/robosub obstacles/obstacles.obj', function ( object ) {
-                    loader.load('obj/robosub obstacles/obstacles.obj', 'obj/robosub obstacles/obstacles.mtl', function (object) {
-                        object.position.y = -12.975; //experimentally generated via trial and error
-                        scene2.add(object); //to make a Robosub you would likely need to change it's name from "object"
-                    });
+                    renderer.setClearColor(0xffffff);
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+
+                    container2 = document.getElementById('inset');
+                    // renderer
+                    renderer2 = new THREE.WebGLRenderer();
+                    renderer2.setClearColor(0xf0f0f0, 1);
+                    renderer2.setSize(300, 300);
+                    container2.appendChild(renderer2.domElement);
+
+
+                    scene = new THREE.Scene();
+                    //scene.overrideMaterial = new THREE.MeshDepthMaterial();
+                    scene2 = new THREE.Scene();
+                    //scene2.overrideMaterial = new THREE.MeshDepthMaterial();
+                };
+
+                scope.initWater = function () {
+                    //add water colored fog
+                    scene.fog = new THREE.FogExp2(0x008080, 0.1875);
+                    scene2.fog = new THREE.FogExp2(0x008080, 0.1875);
 
                     waterNormals = new THREE.ImageUtils.loadTexture('textures/waternormals.jpg'); //potential for easy modification/obstacle reflections
                     waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping; //recycle that .jpg like a TV re-run
@@ -443,7 +286,179 @@ angular.module('simbox')
                     scene2.add(mirrorMeshB); //add underwater water surface
                     scene2.add(mirrorMeshB2); //add water surface
                     scene2.add(mirrorMeshB3); //add water surface
+                };
 
+                scope.initSceneLighting = function () {
+                    //POST PROCESSING
+                    //Create Shader Passes
+                    renderPass = new THREE.RenderPass(scene, camera);
+                    copyPass = new THREE.ShaderPass(THREE.CopyShader);
+
+                    brightnessContrastPass = new THREE.ShaderPass(THREE.BrightnessContrastShader);
+                    brightnessContrastPass.uniforms["contrast"].value = 0.8;
+                    //Add scene lighting
+                    lightRed = new THREE.HemisphereLight(0xff0000, 0x008080, 1); //I tried changing the light color here to see what would happen
+                    lightRed.position.set(-1, 1, -1); //my hemisphere flipped upside down
+                    lightRed.intensity = .25;
+                    scene.add(lightRed); //I changed the name to distinguish a negative y value from "sunlight"
+
+                    light2Red = new THREE.HemisphereLight(0xff0000, 0x008080, 1); //I tried changing the light color here to see what would happen
+                    light2Red.position.set(-1, 1, -1); //my hemisphere flipped upside down
+                    light2Red.intensity = .25;
+                    scene2.add(light2Red); //I changed the name to distinguish a negative y value from "sunlight"
+
+                    lightGreen = new THREE.HemisphereLight(0x5eff00, 0x008080, 1); //I tried changing the light color here to see what would happen
+                    lightGreen.position.set(-1, 1, -1); //my hemisphere flipped upside down
+                    lightGreen.intensity = .25;
+                    scene.add(lightGreen); //I changed the name to distinguish a negative y value from "sunlight"
+
+                    light2Green = new THREE.HemisphereLight(0x5eff00, 0x008080, 1); //I tried changing the light color here to see what would happen
+                    light2Green.position.set(-1, 1, -1); //my hemisphere flipped upside down
+                    light2Green.intensity = .25;
+                    scene2.add(light2Green); //I changed the name to distinguish a negative y value from "sunlight"
+
+                    lightBlue = new THREE.HemisphereLight(0x00a9ff, 0x008080, 1); //I tried changing the light color here to see what would happen
+                    lightBlue.position.set(-1, 1, -1); //my hemisphere flipped upside down
+                    lightBlue.intensity = .25;
+                    scene.add(lightBlue); //I changed the name to distinguish a negative y value from "sunlight"
+
+                    light2Blue = new THREE.HemisphereLight(0x00a9ff, 0x008080, 1); //I tried changing the light color here to see what would happen
+                    light2Blue.position.set(-1, 1, -1); //my hemisphere flipped upside down
+                    light2Blue.intensity = .25;
+                    scene2.add(light2Blue); //I changed the name to distinguish a negative y value from "sunlight"
+
+                    //More scene lighting
+                    //Red
+                    ambientLightRed = new THREE.AmbientLight(0xff0000);
+                    ambientLightRed.intensity = .375;
+                    scene.add(ambientLightRed);
+
+                    ambientLight2Red = new THREE.AmbientLight(0xff0000);
+                    ambientLight2Red.intensity = .375;
+                    scene2.add(ambientLight2Red);
+
+                    //Green
+                    ambientLightGreen = new THREE.AmbientLight(0x5eff00);
+                    ambientLightGreen.intensity = .375;
+                    scene.add(ambientLightGreen);
+
+                    ambientLight2Green = new THREE.AmbientLight(0x5eff00);
+                    ambientLight2Green.intensity = .375;
+                    scene2.add(ambientLight2Green);
+
+                    //Blue
+                    ambientLightBlue = new THREE.AmbientLight(0x00a9ff);
+                    ambientLightBlue.intensity = .375;
+                    scene.add(ambientLightBlue);
+
+                    ambientLight2Blue = new THREE.AmbientLight(0x00a9ff);
+                    ambientLight2Blue.intensity = .375;
+                    scene2.add(ambientLight2Blue);
+
+                    /*
+                    //HemisphereLight details
+                    lightRed lightRed.intensity = .25;
+                    light2Red light2Red.intensity = .25;
+                    lightGreen lightGreen.intensity = .25;
+                    light2Green light2Green.intensity = .25;
+                    lightBlue lightBlue.intensity = .25;
+                    light2Blue light2Blue.intensity = .25;
+                    //HemisphereLight details
+
+                    //ambient light details
+                    ambientLightRed ambientLightRed.intensity = .375;
+                    ambientLight2Red ambientLight2Red.intensity = .375;
+                    ambientLightGreen ambientLightGreen.intensity = .375;
+                    ambientLight2Green ambientLight2Green.intensity = .375;
+                    ambientLightBlue ambientLightBlue.intensity = .375;
+                    ambientLight2Blue ambientLight2Blue.intensity = .375;
+                    //ambient light details
+                    */
+
+
+                    //light up the sun
+                    //spotLightSUN = new THREE.SpotLight(0xFFFFFF);
+                    //spotLightSUN.position.set(100, 140, -130);
+                    //spotLightSUN.intensity = 1000;
+                    //scene.add(spotLightSUN);
+
+                    //Add the three spotlights representing the sun(intensity will be modified as a function of depth)
+                    spotLightRED = new THREE.SpotLight(0xff0000);
+                    spotLightRED.position.set(100, 140, -130);
+                    spotLightRED.intensity = .85;
+                    scene.add(spotLightRED);
+
+                    spotLightRED2 = new THREE.SpotLight(0xff0000);
+                    spotLightRED2.position.set(100, 140, -130);
+                    spotLightRED2.intensity = .85;
+                    scene2.add(spotLightRED2);
+
+                    spotLightBLUE = new THREE.SpotLight(0x00a9ff);
+                    spotLightBLUE.position.set(100, 140, -130);
+                    spotLightBLUE.intensity = .85;
+                    scene.add(spotLightBLUE);
+
+                    spotLightBLUE2 = new THREE.SpotLight(0x00a9ff);
+                    spotLightBLUE2.position.set(100, 140, -130);
+                    spotLightBLUE2.intensity = .85;
+                    scene2.add(spotLightBLUE2);
+
+                    spotLightGREEN = new THREE.SpotLight(0x5eff00);
+                    spotLightGREEN.position.set(100, 140, -130);
+                    spotLightGREEN.intensity = .85;
+                    scene.add(spotLightGREEN);
+
+                    spotLightGREEN2 = new THREE.SpotLight(0x5eff00);
+                    spotLightGREEN2.position.set(100, 140, -130);
+                    spotLightGREEN2.intensity = .85;
+                    scene2.add(spotLightGREEN2);
+                    //Add the three spotlights representing the sun(intensity will be modified as a function of depth)
+                    //
+                    // add spotlight for the shadows
+                    /*
+                                var spotLight = new THREE.SpotLight(0xffffff);
+                                spotLight.position.set(100, 140, 130);
+                                spotLight.intensity = 2;
+                                scene.add(spotLight);
+                                var spotLight2 = new THREE.SpotLight(0xffffff);
+                                spotLight2.position.set(100, 140, 130);
+                                spotLight2.intensity = 2;
+                                scene2.add(spotLight2);
+                                */
+                };
+
+                scope.initLoadObjects = function () {
+                    //load and insert the obj meshes and mtl textures
+                    //the "secret sauce" is in these .obj and .mtl files.
+                    //              var loader = new THREE.OBJLoader(); //this object does the work
+                    var loader = new THREE.OBJMTLLoader(); //this object does the work
+                    //
+                    //              loader.load('../obj/transdec OBJ/transdec test.obj', function ( object ) {
+                    loader.load('obj/transdec OBJ/transdec test.obj', 'obj/transdec OBJ/transdec test.mtl', function (object) {
+                        object.position.y = -12.975; //experimentally generated via trial and error
+                        //                  for(var i in object.children) {
+                        //                          object.children[i].material = new THREE.MeshDepthMaterial({color: 0x2194CE});
+                        //                      }
+                        scene.add(object); //to make a Robosub you would likely need to change it's name from "object"
+                    });
+                    //              loader.load('../obj/robosub obstacles/obstacles.obj', function ( object ) {
+                    loader.load('obj/robosub obstacles/obstacles.obj', 'obj/robosub obstacles/obstacles.mtl', function (object) {
+                        object.position.y = -12.975; //experimentally generated via trial and error
+                        //                  for(var i in object.children) {
+                        //                          object.children[i].material = new THREE.MeshDepthMaterial({color: 0x2194CE});
+                        //                      }
+                        scene.add(object); //to make a Robosub you would likely need to change it's name from "object"
+                    });
+                    //              loader.load('../obj/transdec OBJ/transdec test.obj', function ( object ) {
+                    loader.load('obj/transdec OBJ/transdec test.obj', 'obj/transdec OBJ/transdec test.mtl', function (object) {
+                        object.position.y = -12.975; //experimentally generated via trial and error
+                        scene2.add(object); //to make a Robosub you would likely need to change it's name from "object"
+                    });
+                    //              loader.load('../obj/robosub obstacles/obstacles.obj', function ( object ) {
+                    loader.load('obj/robosub obstacles/obstacles.obj', 'obj/robosub obstacles/obstacles.mtl', function (object) {
+                        object.position.y = -12.975; //experimentally generated via trial and error
+                        scene2.add(object); //to make a Robosub you would likely need to change it's name from "object"
+                    });
 
 
                     // load skybox &/or (start example code copypasta: http://threejs.org/examples/#webgl_shaders_ocean)
@@ -533,7 +548,9 @@ angular.module('simbox')
 
                     scene.add(skyBox); //create Point Loma Sky
                     scene2.add(skyBox2); //create Point Loma Sky
+                };
 
+                scope.initGui = function () {
                     guivalues = new function () {
 
                             this.timeShift = 0;
@@ -742,13 +759,7 @@ angular.module('simbox')
                     timeOfDay.onChange(function (value) {
                         guivalues.timeShift = value;
                     });
-
-                    // element is provided by the angular directive
-                    element[0].appendChild(renderer.domElement);
-
-                    window.addEventListener('resize', scope.onWindowResize, false);
                 };
-
 
 
                 // -----------------------------------
@@ -978,6 +989,10 @@ angular.module('simbox')
 
                     renderer.render(scene, camera); //render everything else
                     renderer2.render(scene2, camera2); //render everything else
+
+                    $timeout(function () {
+                        $window.loading_screen.finish();
+                    }, 3000);
 
                 };
 
