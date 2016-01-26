@@ -764,17 +764,10 @@ angular.module('simbox')
                 // -----------------------------------
                 scope.resizeCanvas = function () {
 
-                    contW = (scope.fillcontainer) ?
-                        element[0].clientWidth : scope.width;
-                    contH = scope.height;
-
-                    windowHalfX = contW / 2;
-                    windowHalfY = contH / 2;
-
-                    camera.aspect = contW / contH;
+                    camera.aspect = window.innerWidth / window.innerHeight;
                     camera.updateProjectionMatrix();
 
-                    renderer.setSize(contW, contH);
+                    renderer.setSize(window.innerWidth, window.innerHeight);
 
                 };
 
@@ -1080,7 +1073,6 @@ angular.module('simbox')
 
                         if (newValue > 0) {
                             camControls.moveState.yawRight = 1;
-                            //camera.translateZ(-40);
                         }
 
                         if (newValue == 0) {
