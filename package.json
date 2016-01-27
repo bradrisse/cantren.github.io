@@ -5,6 +5,7 @@
   "main": "server.js",
   "dependencies": {
     "express": "^4.12.3",
+    "gulp-less": "^3.0.5",
     "johnny-five": "^0.9.18",
     "socket.io": "latest"
   },

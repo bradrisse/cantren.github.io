@@ -5,32 +5,67 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ROBOSUB</title>
-
+    <title> SIMBOX</title>
+    <link rel="icon" type="image/png" href="images/favicon.ico">
     <!-- Load Wait First -->
     <link rel="stylesheet" href="js/vendor/please-wait.css">
+    <link rel="stylesheet" href="styles/spinners.css">
     <script src="js/vendor/please-wait.js"></script>
-    <link rel="stylesheet" href="styles/main.css">
     <script src="js/vendor/socket.io.js"></script>
-    <script src="js/vendor/angular.min.js"></script>  
+    <script src="js/vendor/angular.min.js"></script>
     <script src="js/vendor/socket.min.js"></script>
     <script src="js/vendor/jquery.js"></script>
+    <script src="js/vendor/angular-sanitize.js"></script>
     <script src="js/vendor/bootstrap.min.js"></script>
     <script src="js/vendor/ui-bootstrap.min.js"></script>
     <script src="js/vendor/gamepad.js"></script>
+    <script src="js/vendor/d3.min.js"></script>
+    <script src="js/vendor/ng-knob.js"></script>
     <script src="js/app.js"></script>
-    <script src="js/directives/robosub.js"></script>
-    <!-- <script src="http://code.jquery.com/jquery-git2.js"></script> -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="js/vendor/bootstrap.min.css">
 </head>
 
 <body ng-controller="AppCtrl">
-
     <div class="container">
-        <div robosub width="canvasWidth" roll="roll" trim="trim" speed="speed" pitch="pitch" depth="depth" height="canvasHeight" fillcontainer="dofillcontainer" scale="scale" material-type="materialType"></div>
-        <div id="inset"></div>
+        <div robosub width="canvasWidth" roll="roll" trim="trim" speed="speed" pitch="pitch" depth="depth" height="canvasHeight" fillcontainer="dofillcontainer" scale="scale" material-type="materialType" onZchange="onZchange(degree)"></div>
+        <div class="bottom-camera">
+            <p>Bottom Camera</p>
+            <div id="inset"></div>
+        </div>
     </div>
-</body>
+    <div id="hud">
+        <div class="row">
+            <div class="col-xs-12">
+                <ui-knob value="batteryValue" options="batteryOptions" class="battery-options" ng-class="{'critical': batteryValue < 33}"></ui-knob>
+                <div class="ruler-wrapper">
+                    <ul class="ruler">
+                        <li ng-repeat="degree in degrees">
+                            <span ng-if="degree % 45 === 0">
+                            <div ng-switch on="degree">
+                                  <div ng-switch-when="0">N</div>
+                                  <div ng-switch-when="45">NE</div>
+                                  <div ng-switch-when="90">E</div>
+                                  <div ng-switch-when="135">SE</div>
+                                  <div ng-switch-when="180">S</div>
+                                  <div ng-switch-when="225">SW</div>
+                                  <div ng-switch-when="270">W</div>
+                                  <div ng-switch-when="315">NW</div>
+                                  <div ng-switch-default></div>
+                              </div>
+                        </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="target-wrap">
+            <div class="center-target absolute-center"></div>
+        </div>
+</body>
+<script src="js/directives/robosub.js"></script>
 <script src="js/three.min.js"></script>
 <script src="js/vendor/water-material.js"></script>
 <script src="js/vendor/FlyControls.js"></script>

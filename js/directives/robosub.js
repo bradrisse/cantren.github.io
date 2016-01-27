@@ -14,7 +14,8 @@ angular.module('simbox')
                 'depth': '=',
                 'pitch': '=',
                 'trim': '=',
-                'roll': '='
+                'roll': '=',
+                'onZchange': "&"
             },
             link: function postLink(scope, element, attrs) {
 
@@ -62,6 +63,7 @@ angular.module('simbox')
 
                 scope.initCameras = function () {
                     camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.5, 3000000);
+                    scope.testCamera = camera;
                     //buoy closeup location
                     camera.position.x = -16.73; //pool line of symetry is x axis
                     camera.position.y = -2.52; //water depth
@@ -73,7 +75,8 @@ angular.module('simbox')
                     //              camera.position.y = -2.0;//water depth
                     //                  camera.position.z = -28.0;//how close to the wall are you
                     //normal starting location
-                    camera.rotation.z = 3.06;
+                    camera.rotation.z = 0;
+                    camera.rotation.y = -4.5;
                     camera.near = 0.5;
                     camera.far = 21.5;
 
@@ -140,7 +143,7 @@ angular.module('simbox')
                     // renderer
                     renderer2 = new THREE.WebGLRenderer();
                     renderer2.setClearColor(0xf0f0f0, 1);
-                    renderer2.setSize(300, 300);
+                    renderer2.setSize(150, 150);
                     container2.appendChild(renderer2.domElement);
 
 
@@ -295,7 +298,8 @@ angular.module('simbox')
                     copyPass = new THREE.ShaderPass(THREE.CopyShader);
 
                     brightnessContrastPass = new THREE.ShaderPass(THREE.BrightnessContrastShader);
-                    brightnessContrastPass.uniforms["contrast"].value = 0.8;
+                    var brightnessContrastPassUniforms = THREE.UniformsUtils.clone(brightnessContrastPass.uniforms);
+                    brightnessContrastPassUniforms["contrast"].value = 0.8;
                     //Add scene lighting
                     lightRed = new THREE.HemisphereLight(0xff0000, 0x008080, 1); //I tried changing the light color here to see what would happen
                     lightRed.position.set(-1, 1, -1); //my hemisphere flipped upside down
@@ -512,16 +516,18 @@ angular.module('simbox')
 
 
                     var cubeShader = THREE.ShaderLib['cube'];
-                    cubeShader.uniforms['tCube'].value = cubeMap;
+                    var uniforms = THREE.UniformsUtils.clone(cubeShader.uniforms);
+                    uniforms['tCube'].value = cubeMap;
 
                     var cubeShader2 = THREE.ShaderLib['cube'];
-                    cubeShader2.uniforms['tCube'].value = cubeMap2;
+                    var uniforms2 = THREE.UniformsUtils.clone(cubeShader.uniforms);
+                    uniforms2['tCube'].value = cubeMap2;
 
                     //Create skybox material 
                     var skyBoxMaterial = new THREE.ShaderMaterial({
                         fragmentShader: cubeShader.fragmentShader,
                         vertexShader: cubeShader.vertexShader,
-                        uniforms: cubeShader.uniforms,
+                        uniforms: uniforms,
                         depthWrite: false,
                         //fog: true, //To Do: make a derived shade which has been modified for "fog"
                         side: THREE.BackSide
@@ -530,7 +536,7 @@ angular.module('simbox')
                     var skyBoxMaterial2 = new THREE.ShaderMaterial({
                         fragmentShader: cubeShader2.fragmentShader,
                         vertexShader: cubeShader2.vertexShader,
-                        uniforms: cubeShader2.uniforms,
+                        uniforms: uniforms2,
                         depthWrite: false,
                         //fog: true, //To Do: make a derived shade which has been modified for "fog"
                         side: THREE.BackSide
@@ -722,6 +728,7 @@ angular.module('simbox')
                     //source: This code no longer appears to contain anything that belongs to http://nuevil.com/index3.html
 
                     posX.onChange(function (value) {
+
                         camera2.position.x = value;
                         camera.position.x = value;
                     });
@@ -821,13 +828,18 @@ angular.module('simbox')
                     //rapid time for testing
                     timeSolar = performance.now() * 0.00000003472 * 36000; //Measure time for sun
 
-                    water.material.uniforms.time.value += 1.0 / 60.0; //speed of water motion(wind chop)
+                    var waterMaterialUniforms = THREE.UniformsUtils.clone(water.material.uniforms);
+                    var waterMaterialUniforms2 = THREE.UniformsUtils.clone(water2.material.uniforms);
+                    var causticMaterialUniforms = THREE.UniformsUtils.clone(caustic.material.uniforms);
+                    var causticMaterialUniforms2 = THREE.UniformsUtils.clone(caustic2.material.uniforms);
+
+                    waterMaterialUniforms.time.value += 1.0 / 60.0; //speed of water motion(wind chop)
                     water.render(); //render water surface
-                    water2.material.uniforms.time.value += 1.0 / 60.0; //speed of water motion(wind chop)
+                    waterMaterialUniforms2.time.value += 1.0 / 60.0; //speed of water motion(wind chop)
                     water2.render(); //render water surface
-                    caustic.material.uniforms.time.value += 1.0 / 30.0; //speed of water motion(wind chop)
+                    causticMaterialUniforms.time.value += 1.0 / 30.0; //speed of water motion(wind chop)
                     caustic.render(); //render water surface
-                    caustic2.material.uniforms.time.value += 1.0 / 30.0; //speed of water motion(wind chop)
+                    causticMaterialUniforms2.time.value += 1.0 / 30.0; //speed of water motion(wind chop)
                     caustic2.render(); //render water surface
 
 
@@ -992,13 +1004,25 @@ angular.module('simbox')
 
                     $timeout(function () {
                         $window.loading_screen.finish();
-                    }, 3000);
+                    }, 5000);
 
                 };
 
+                scope.$watch('testCamera.rotation.z', function (newValue, oldValue) {
+                    if (newValue) {
+                        var directions = camera.getWorldDirection();
+                        var phi = Math.atan2(directions.z,directions.x);
+                        var degree = (180/Math.PI)*phi + 180;
+                        console.log('onZchange ', degree);
+                        scope.onZchange({
+                            degree: degree
+                        });
+                    }
+                });
+
                 scope.$watch('speed', function (newValue, oldValue) {
                     if (newValue) {
-                        console.log('new speed ', newValue);
+                        console.log('new speed ', camera.getWorldDirection());
                         if (newValue < 0) {
                             camControls.moveState.forward = 1;
                         }

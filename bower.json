@@ -30,7 +30,11 @@
     "angular": "angularjs#~1.4.9",
     "socket.io-client": "~1.4.4",
     "angular-socket-io": "~0.7.0",
-    "please-wait": "~0.0.5"
+    "please-wait": "~0.0.5",
+    "angular-sanitize": "~1.4.9",
+    "angular-chart.js": "~0.8.8",
+    "Chart.js": "~1.0.2",
+    "ng-knob": "~0.1.1"
   },
   "overrides": {
     "three.js": {
@@ -98,6 +102,11 @@
       "main": [
         "./build/please-wait.js",
         "./build/please-wait.css"
+      ]
+    },
+    "d3": {
+      "main": [
+        "./d3.min.js"
       ]
     }
   }

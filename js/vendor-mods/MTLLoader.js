@@ -1,4 +1,8 @@
 /**
+ *
+ * MODIFIED
+ * - modified to allow cross origin loading for local obj files
+ *
  * Loads a Wavefront .mtl file specifying materials
  *
  * @author angelxuanchang

@@ -1,6 +1,6 @@
 body {
-    color: #000;
-    font-family: Monospace;
+    color: #ffffff;
+    font-family: 'Helvetica Neue';
     font-size: 13px;
     margin: 0px;
     overflow: hidden;
@@ -8,6 +8,18 @@ body {
 
 a {
     color: #000000;
+}
+
+.absolute-center {
+  margin: auto;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+}
+
+.container {
+    width: 100%!important;
+    margin: 0!important;
+    padding: 0!important;
 }
 
 #info {
@@ -18,19 +30,25 @@ a {
     padding: 5px;
 }
 
-#inset {
-    width: 300px;
-    height: 300px;
-    background-color: #fff;
-    /* or transparent; will show through only if renderer alpha: true */
-    border: 1px solid black;
-    /* or none; */
+.bottom-camera {
+    width: 152px;
+    height: 152px;
+    border: 1px solid #fff;
     margin: 20px;
     padding: 0px;
     position: absolute;
     left: 0px;
     bottom: 0px;
     z-index: 100;
+    p {
+        position: absolute;
+        margin-top: -22px;
+        color: white;
+    }
+    #inset {
+        width: 150px;
+        height: 150px;
+    }
 }
 
 #inset2 {
@@ -56,4 +74,108 @@ a {
     position: fixed;
     left: 0px;
     top: 0px;
+}
+
+#hud {
+    position: absolute;
+    top: 0;
+    padding: 15px;
+    height: 100%;
+    width: 100%;
+}
+
+.battery-options.critical {
+    #valueArc {
+        fill: rgba(255, 0, 0, 0.5)!important;
+    }
+}
+
+.center-target {
+    background: url('../images/center-target.png');
+    width: 100px;
+    height: 100px;
+    z-index: 99999;
+    background-size: cover;
+}
+
+.ruler,
+.ruler li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: inline-block;
+}
+
+
+/* IE6-7 Fix */
+
+.ruler,
+.ruler li {
+    *display: inline;
+}
+
+.ruler {
+    background: lightYellow;
+    box-shadow: 0 -1px 1em hsl(60, 60%, 84%) inset;
+    border-radius: 2px;
+    border: 1px solid #ccc;
+    color: #ccc;
+    margin: 0;
+    height: 3em;
+    padding-right: 1cm;
+    white-space: nowrap;
+    position: relative;
+}
+
+.ruler li {
+    padding-left: 1cm;
+    width: 2em;
+    margin: .64em -1em -.64em;
+    text-align: center;
+    position: relative;
+    text-shadow: 1px 1px hsl(60, 60%, 84%);
+}
+
+.ruler li:before {
+    content: '';
+    position: absolute;
+    border-left: 1px solid #ccc;
+    height: .64em;
+    top: -.64em;
+    right: 1em;
+}
+
+.ruler-wrapper {
+    max-width: 500px;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    right: 30%;
+}
+
+.pg-loading-screen {
+    background: #03b2ad;
+    /* Old browsers */
+    background: -moz-radial-gradient(center, ellipse cover, #03b2ad 16%, #1f6e8c 100%);
+    /* FF3.6-15 */
+    background: -webkit-radial-gradient(center, ellipse cover, #03b2ad 16%, #1f6e8c 100%);
+    /* Chrome10-25,Safari5.1-6 */
+    background: radial-gradient(ellipse at center, #03b2ad 16%, #1f6e8c 100%);
+    /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    //filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#03b2ad', endColorstr='#1f6e8c', GradientType=1);
+    /* IE6-9 fallback on horizontal gradient */
+}
+
+.pg-loading-logo {
+    max-width: 500px;
+}
+
+.pg-loading-screen .pg-loading-html {
+    margin-top: 50px!important;
+}
+
+.loading-message {
+    color: white!important;
+    font-style: italic;
+    font-size: 16px;
 }
